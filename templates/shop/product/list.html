@@ -1,0 +1,50 @@
+{% extends "shop/base.html" %}
+{% load static %}
+{% block title %}
+    {% if category %}{{ category.name }}{% else %}Products{% endif %}
+{% endblock %}
+{% block content %}
+    <div id="sidebar">
+        <h3>Подкатегории</h3>
+        <ul>
+            <li {% if not category %}class="selected"{% endif %}>
+                <a href="/product/">All</a>
+            </li>
+            {% for c in categories %}
+                <li {% if category.slug == c.slug %}class="selected"{% endif %}>
+                    <a href="/product/{{c.slug}}/">{{ c.name }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div id="main" class="product-list">
+        <h1>{% if category %}{{ category.name }}{% else %}Products{% endif %}</h1>
+        {% for product in page_obj %}
+            <div class="item">
+                <a href="/product/{{product.id}}/{{product.slug}}/">
+                   <img src="{% if product.image %}{{ product.img_medium.url }}{% else %}{% static 'img/no_image.png' %}{% endif %}">-->
+                </a>
+               <a href="/product/{{product.id}}/{{product.slug}}/">{{ product.name }}</a><br>
+                {{ product.price }}руб.
+            </div>
+        {% endfor %}
+    </div>
+
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">в начало</a><hr>
+            <a href="?page={{ page_obj.previous_page_number }}">предыдущая</a>
+        {% endif %}
+
+        <span class="current">
+            Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">следующая</a><hr>
+            <a href="?page={{ page_obj.paginator.num_pages }}">в конец</a>
+        {% endif %}
+    </span>
+</div>
+{% endblock %}

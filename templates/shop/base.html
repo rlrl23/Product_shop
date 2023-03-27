@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+     <title>{% block title %}shop{% endblock %}</title>
+    <link href="{% static 'css/base.css' %}" rel="stylesheet">
+
+</head>
+<body>
+<div id="header">
+    <a href="/" class="logo">Магазин</a>
+</div>
+<div id="subheader">
+    {% if user.is_authenticated %}
+    <div class="cart">
+       {% with total_items=cart|length %}
+        {% if cart|length > 0 %}
+            В корзине:
+            <a id="cart_length_sum" href="/cart/">
+                {{ total_items }}{% if cart|length == 1%} товар {%else%} товара{%endif%}
+                на {{ cart.get_total_price }}руб.
+            </a>
+        {% else %}
+            Корзина пуста
+        {% endif %}
+    {% endwith %}
+        {% else %}
+            <ul class="sidebar-nav">
+   {% if user.is_authenticated %}
+     <li><a href="{% url 'logout'%}?next={{request.path}}">Logout</a></li>
+   {% else %}
+     <li><a href="{% url 'login'%}?next={{request.path}}">Login</a></li>
+   {% endif %}
+                {% endif %}
+  </ul>
+    </div>
+</div>
+<div id="content">
+    {% block content %}
+
+    {% endblock %}
+</div>
+</body>
+</html>

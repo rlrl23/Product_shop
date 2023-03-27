@@ -1,0 +1,72 @@
+{% extends "shop/base.html" %}
+{% load static %}
+{% block title %}
+    Your shopping cart
+{% endblock %}
+{% block content %}
+    <h1>Корзина</h1>
+    <table class="cart">
+        <thead>
+        <tr>
+            <th></th>
+            <th>Продукт</th>
+            <th>Количество</th>
+            <th>Удалить</th>
+            <th>Цена за единицу</th>
+            <th>Общая цена</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in cart %}
+            {% with product=item.product %}
+                <tr>
+                    <td>
+                        <a href="/product/{{product.id}}/{{product.slug}}/">
+                            <img src="
+                                {% if product.image %}
+                                    {{ product.img_small.url }}
+                                {% else %}
+                                    {% static 'img/no_image.png' %}
+                                {% endif %}">
+                        </a>
+                    </td>
+                    <td>{{ product.name }}</td>
+                    <td>
+                <input id="{{product.id}}input" type='text' placeholder={{item.quantity}} oninput="Change_prices({{product.id}}, {{item.price}})">
+
+                    </td>
+                    <td><a href="/cart/remove/{{product.id}}">Удалить</a></td>
+                    <td id=price class="num">{{ item.price }}руб.</td>
+                    <td id={{product.id}}item_total_price class="num">{{ item.total_price }}руб.</td>
+                </tr>
+            {% endwith %}
+        {% endfor %}
+        <tr class="total">
+            <td>Итого</td>
+            <td colspan="4"></td>
+            <td id=total_price class="num">{{ cart.get_total_price }}руб.</td>
+        </tr>
+        </tbody>
+    </table>
+    <p class="text-right">
+        <a href="/product/" class="button light">Продолжить покупки</a>
+        <a href="clean/" class="button">Очистить корзину</a>
+    </p>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script>
+function Change_prices(product_id, item_price){
+console.log(product_id);
+let new_quantity=document.getElementById(product_id+"input").value;
+console.log(new_quantity);
+let new_item_total_price=item_price*new_quantity;
+let old_item_total_price=document.getElementById(product_id+"item_total_price").textContent;
+let [old_item_total_price_num, currency] =old_item_total_price.split('руб.');
+document.getElementById(product_id+"item_total_price").innerHTML= new_item_total_price.toFixed(2)+'руб.';
+let old_total_price=document.getElementById("total_price").textContent;
+let [old_total_price_num, cur] =old_total_price.split('руб.');
+let new_total_price= (+(old_total_price_num)-(old_item_total_price_num)+new_item_total_price);
+document.getElementById("total_price").innerHTML= new_total_price.toFixed(2)+'руб.';
+}
+</script>
+{% endblock %}
